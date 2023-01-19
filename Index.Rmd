@@ -4,6 +4,12 @@ author: "Mario"
 date: "07/12/2021"
 output: html_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
 "A controlled microclimate contrast of three native and one highly invasive plant species in Southern California"
 
 
@@ -21,9 +27,6 @@ Results: The evaluation of temperature on the overall successive germination of 
 Conclusion: These findings suggest that increases in ambient temperature due to global warming can have negative impacts on both native and exotic plant establishment and succession. Analyzing the performance and establishment of these annual species is essential to understanding local plant community composition while determining the responses both native and exotic annuals have to increasing abiotic stressors within arid/semi-arid ecosystems. Specifically understanding how increasing ambient temperature influences exotic annual establishment can be vital knowledge for managing the spread and establishment of these species.
 
 Key Words: Intraspecific Association, Desert, Grassland, Greenhouse, Temperature, Bromus rubens, Exotic Species, Restoration
-
-
-
 
 ```{r}
 ###Packages for future work
