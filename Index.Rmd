@@ -8,6 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
 ```
+# All proposed figures and Stats are at THE BOTTOM of the html
+
 
 
 "A controlled microclimate contrast of three native and one highly invasive plant species in Southern California"
@@ -353,6 +355,11 @@ m6 <- glm(average_mass ~ mean_temp*species+pendant_ID, family = "quasipoisson", 
 anova(m6, test = "Chisq")
 e9 <- emmeans(m6, pairwise~species|mean_temp)
 e9
+
+a <- glm(average_mass ~ max_temp*species+pendant_ID, family = "quasipoisson", data = final)
+anova(a, test = "Chisq")
+e09 <- emmeans(a, pairwise~species|max_temp)
+e09
 ```
 ```{r}
 ###Set up percent successful establishment of individuals
@@ -360,14 +367,14 @@ final$succession <- final$establishment/final$germination
 ```
 
 ```{r}
-###Treat Temp as Block
-###Average Mass
+### Treat Temp as Block
+### Average Mass
 ggplot(final, aes(mean_temp, average_mass, color = temp),show.legend=FALSE) +
   geom_point() +
   facet_wrap(~species) +
   scale_color_brewer(palette = "Set1") + theme_classic() +
   geom_smooth(method = lm, se = TRUE) + 
-  labs(x = "Temperature", y = "Bimass per Individual")
+  labs(x = "Mean Temperature", y = "Bimass per Individual")
 
 model1 <- glm(average_mass ~ temp*species, family = "quasipoisson", data = final)
 anova(model1, test = "Chisq")
@@ -380,7 +387,7 @@ ggplot(final, aes(mean_temp, succession, color = temp),show.legend=FALSE) +
   facet_wrap(~species) +
   scale_color_brewer(palette = "Set1") + theme_classic() +
   geom_smooth(method = lm, se = TRUE) + 
-  labs(x = "Temperature", y = "Percent Successfully Established")
+  labs(x = "Mean Temperature", y = "Percent Successfully Established")
 
 model2 <- glm(succession ~ temp*species, family = "quasipoisson", data = final)
 anova(model2, test = "Chisq")
@@ -393,7 +400,7 @@ ggplot(final, aes(mean_temp, establishment, color = temp),show.legend=FALSE) +
   facet_wrap(~species) +
   scale_color_brewer(palette = "Set1") + theme_classic() +
   geom_smooth(method = lm, se = TRUE) + 
-  labs(x = "Temperature", y = "Number Established Individuals")
+  labs(x = "Mean Temperature", y = "Individual Establishment")
 
 model3 <- glm(establishment ~ temp*species, family = "quasipoisson", data = final)
 anova(model3, test = "Chisq")
@@ -407,7 +414,7 @@ ggplot(final, aes(mean_temp, germination, color = temp),show.legend=FALSE) +
   facet_wrap(~species) +
   scale_color_brewer(palette = "Set1") + theme_classic() +
   geom_smooth(method = lm, se = TRUE) + 
-  labs(x = "Temperature", y = "Number Germinated Individuals")
+  labs(x = "Mean Temperature", y = "Individual Germination")
 
 model4 <- glm(germination ~ temp*species, family = "quasipoisson", data = final)
 anova(model4, test = "Chisq")
@@ -439,8 +446,8 @@ em8 <- emmeans(model8, pairwise~species|mean_temp)
 em8
 ```
 ```{r}
-###Test everything with Maximum Temp
-#Max Temp by Average mass
+### Test everything with Maximum Temp
+# Max Temp by Average mass
 ggplot(final, aes(max_temp, average_mass, color = temp),show.legend=FALSE) +
   geom_point() +
   facet_wrap(~species) +
@@ -502,7 +509,7 @@ ggplot(final, aes(mean_temp, succession, color = temp),show.legend=FALSE) +
   facet_wrap(~species) +
   scale_color_brewer(palette = "Set1") + theme_classic() +
   geom_smooth(method = lm, se = TRUE) + 
-  labs(x = "Temperature", y = "Number Germinated Individuals")
+  labs(x = "Temperature", y = "Successive Individuals")
 
 model13 <- glm(succession ~ mass*temp*species, family = "quasipoisson", data = final)
 anova(model13, test = "Chisq")
@@ -510,10 +517,47 @@ em13 <- emmeans(model13, pairwise~temp|species)
 em13
 ```
 
+```{r}
+### Stats for mass
+m20 <- glm(mass ~ species*temp+mean_temp+max_temp, family = "quasipoisson", data = final)
+anova(m20, test = "Chisq")
+e20 <- emmeans(m20, pairwise~temp|species)
+e20
+
+m21 <- glm(germination ~ temp*establishment*mass*species, family = "quasipoisson", data = final)
+anova(m21, test = "Chisq")
+e21 <- emmeans(m1, pairwise~temp|species)
+e21
+
+# Testing Mass, establishment, and germination with temp as a block/category by species (Need pendant ID)
+
+m61 <- glm(mass ~ temp*species+pendant_ID, family = "quasipoisson", data = final)
+anova(m61, test = "Chisq")
+e91 <- emmeans(m61, pairwise~species|temp)
+e91
+
+m62 <- glm(establishment ~ temp*species+pendant_ID, family = "quasipoisson", data = final)
+anova(m62, test = "Chisq")
+e92 <- emmeans(m62, pairwise~species|temp)
+e92
+
+m63 <- glm(germination ~ temp*species+pendant_ID, family = "quasipoisson", data = final)
+anova(m63, test = "Chisq")
+e93 <- emmeans(m63, pairwise~species|temp)
+e93
+```
 
 
 
+### Temperature Ranges per species from publications:
+Salvia ranges from 10C to 25C (Cabrerra-Santos et al. 2022, Dashti et al. 2015)
+Bromus ranges 
+Layia ranges
+Phacelia ranges
 
+
+###GBIF citation
+GBIF.org (31 January 2023) GBIF Occurrence Download  https://doi.org/10.15468/dl.vtkfem
 
 
 
@@ -540,3 +584,109 @@ Rough Ideas:
 3)Species should vary in their response to fine scale temperature since the range that they germinate vary from species to species. We should see that some natives germinate better at specific temperature while others do not.
 4) We can connect this possibly to climate change. If we find that higher temperatures means a lower germination success then that can be the take-home message, that increasing temperatures have negative effects on desert plant species.
 
+
+
+#### Proposed figures and stats
+```{r}
+### Treat Temp as Block
+
+# Testing Mass, establishment, and germination with temp as a block/category by species (Need pendant ID)
+
+m61 <- glm(mass ~ temp*species+pendant_ID, family = "quasipoisson", data = final)
+broom::tidy(anova(m61, test = "Chisq"))
+e91 <- emmeans(m61, pairwise~species|temp)
+e91      # Broom::tidy() does not work on emmeans
+
+m62 <- glm(establishment ~ temp*species+pendant_ID, family = "quasipoisson", data = final)
+broom::tidy(anova(m62, test = "Chisq"))
+e92 <- emmeans(m62, pairwise~species|temp)
+e92
+
+m63 <- glm(germination ~ temp*species+pendant_ID, family = "quasipoisson", data = final)
+broom::tidy(anova(m63, test = "Chisq"))
+e93 <- emmeans(m63, pairwise~species|temp)
+e93
+
+
+
+### Average Mass by mean temp
+ggplot(final, aes(mean_temp, average_mass, color = temp),show.legend=FALSE) +
+  geom_point() +
+  facet_wrap(~species) +
+  scale_color_brewer(palette = "Set1") + theme_classic() +
+  geom_smooth(method = lm, se = TRUE) + 
+  labs(x = "Mean Temperature", y = "Bimass per pot (g)")
+
+model1 <- glm(average_mass ~ temp*species, family = "quasipoisson", data = final)
+broom::tidy(anova(model1, test = "Chisq"))
+em1 <- emmeans(model1, pairwise~temp|species)
+em1
+
+### Overall Establishment by mean temp
+ggplot(final, aes(mean_temp, establishment, color = temp),show.legend=FALSE) +
+  geom_point() +
+  facet_wrap(~species) +
+  scale_color_brewer(palette = "Set1") + theme_classic() +
+  geom_smooth(method = lm, se = TRUE) + 
+  labs(x = "Mean Temperature", y = "Establishment per pot")
+
+model3 <- glm(establishment ~ temp*species, family = "quasipoisson", data = final)
+broom::tidy(anova(model3, test = "Chisq"))
+em3 <- emmeans(model3, pairwise~temp|species)
+em3
+
+### Overall Germination by mean temp
+ggplot(final, aes(mean_temp, germination, color = temp),show.legend=FALSE) +
+  geom_point() +
+  facet_wrap(~species) +
+  scale_color_brewer(palette = "Set1") + theme_classic() +
+  geom_smooth(method = lm, se = TRUE) + 
+  labs(x = "Mean Temperature", y = "Germination per pot")
+
+model4 <- glm(germination ~ temp*species, family = "quasipoisson", data = final)
+broom::tidy(anova(model4, test = "Chisq"))
+em4 <- emmeans(model4, pairwise~temp|species)
+em4
+
+
+### Max Temp by Average mass by max temp
+ggplot(final, aes(max_temp, average_mass, color = temp),show.legend=FALSE) +
+  geom_point() +
+  facet_wrap(~species) +
+  scale_color_brewer(palette = "Set1") + theme_classic() +
+  geom_smooth(method = lm, se = TRUE) + 
+  labs(x = "Maximum Temperature", y = "Bimass per pot (g)")
+
+model9 <- glm(average_mass ~ max_temp*species, family = "quasipoisson", data = final)
+broom::tidy(anova(model9, test = "Chisq"))
+em9 <- emmeans(model9, pairwise~species|max_temp)
+em9
+
+### Overall Establishment by max temp
+ggplot(final, aes(max_temp, establishment, color = temp),show.legend=FALSE) +
+  geom_point() +
+  facet_wrap(~species) +
+  scale_color_brewer(palette = "Set1") + theme_classic() +
+  geom_smooth(method = lm, se = TRUE) + 
+  labs(x = "Maximum Temperature", y = "Establishment per pot")
+
+model11 <- glm(establishment ~ max_temp*species, family = "quasipoisson", data = final)
+broom::tidy(anova(model11, test = "Chisq"))
+em11 <- emmeans(model11, pairwise~species|max_temp)
+em11
+
+## #Overall Germination by max temp
+
+ggplot(final, aes(max_temp, germination, color = temp),show.legend=FALSE) +
+  geom_point() +
+  facet_wrap(~species) +
+  scale_color_brewer(palette = "Set1") + theme_classic() +
+  geom_smooth(method = lm, se = TRUE) + 
+  labs(x = "Maximum Temperature", y = "Germination per pot")
+
+model12 <- glm(germination ~ temp*species, family = "quasipoisson", data = final)
+broom::tidy(anova(model12, test = "Chisq"))
+em12 <- emmeans(model12, pairwise~temp|species)
+em12
+
+```
