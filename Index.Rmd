@@ -586,6 +586,87 @@ Rough Ideas:
 
 
 
+```{r}
+### Test if table temp significant
+Layia <- read.csv("All Temp Data.csv")
+Brome <- read.csv("Brome Temp Sheet.csv")
+Salvia <- read.csv("Salvia Temp Sheet.csv")
+Phacelia <- read.csv("Phacelia Temp Sheet.csv")
+
+### Merge all species temp data
+Temp <- merge(Layia, Brome, all = TRUE)
+Temp <- merge(Temp, Salvia, all = TRUE)
+Temp <- merge(Temp, Phacelia, all = TRUE)
+
+
+final_temp <- Temp %>%
+  group_by(temp, species) %>%
+  summarise(mean_table_temp = mean(temperature))
+
+final2 <- merge(final, final_temp, all = TRUE) %>%
+  na.omit()
+
+
+```
+
+```{r}
+### Test to see if raw temp significant
+library(glmmTMB)
+temp <- glmmTMB(temperature ~ temp*species, data = Temp, family = "gaussian")
+temp
+
+```
+
+
+### Proposed Boxplot figures and stats
+```{r}
+### Average Mass by mean temp
+Mass_plot <- ggplot(final2, aes(mean_table_temp, average_mass, color = temp)) +
+  geom_boxplot(width = 5, length = 10) +
+  scale_fill_discrete(breaks=c("High", "Medium", "Low")) +
+  facet_wrap(~species) + 
+  scale_color_brewer(palette = "Set1") + theme_classic() + ylim(0,0.4)
+Mass_plot
+
+
+Germination_plot <- ggplot(final2, aes(mean_table_temp, germination, color = temp)) +
+  geom_boxplot(width = 5) +
+  scale_fill_discrete(breaks=c("High", "Medium", "Low")) +
+  facet_wrap(~species) + 
+  scale_color_brewer(palette = "Set1") + theme_classic() 
+Germination_plot
+ 
+
+Establishment_plot <- ggplot(final2, aes(mean_table_temp, establishment, color = temp)) +
+  geom_boxplot(width = 5) +
+  scale_fill_discrete(breaks=c("High", "Medium", "Low")) +
+  facet_wrap(~species) + 
+  scale_color_brewer(palette = "Set1") + theme_classic() 
+Establishment_plot
+```
+```{r}
+### Boxplot models
+# Mass
+model1 <- glm(mass ~ mean_table_temp*species+temp, family = "quasipoisson", data = final2)
+broom::tidy(anova(model1, test = "Chisq"))
+estimate1 <- emmeans(model1, pairwise~species|temp)
+estimate1      # Broom::tidy() does not work on emmeans
+
+# Establishment
+model2 <- glm(establishment ~ mean_table_temp*species+temp, family = "quasipoisson", data = final2)
+broom::tidy(anova(model2, test = "Chisq"))
+estimate2 <- emmeans(model2, pairwise~species|mean_table_temp)
+estimate2    # Broom::tidy() does not work on emmeans
+
+# Germination
+model3 <- glm(germination ~ mean_table_temp*species+temp, family = "quasipoisson", data = final2)
+broom::tidy(anova(model3, test = "Chisq"))
+estimate3 <- emmeans(model3, pairwise~species|temp)
+estimate3    # Broom::tidy() does not work on emmeans
+```
+
+
+
 #### Proposed figures and stats
 ```{r}
 ### Treat Temp as Block
